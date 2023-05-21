@@ -38,18 +38,16 @@ exports.signin=async(req,res)=>{
         }
 
         const user = await users.findAll({ where: { email:email } });
-        console.log(user)
-        if(user){
-            const passwords=await users.findOne({where:{password}})
-            console.log(passwords)
-            if(passwords){
+        console.log('this user',user)
+        console.log('user',user[0])
+        if(user.length>0){
+            if(user[0].password===password){
+                console.log('password',password)
                 res.json({res:"loginsuccessfull"})
             }else{
                 res.status(404).json({res:"wrong password"})
                 console.log("wrong password")
             }
-        }else{
-           res.status(400).json({error:"user do not exist"})
         }
 
     }catch(e){
