@@ -30,4 +30,31 @@ exports.signup=async(req,res)=>{
     
 }
 
+exports.signin=async(req,res)=>{
+    try{
+        let {email,password}=req.body;
+        if(isStringInvalid(email)|| isStringInvalid(password)){
+            return res.status(400).json({error:"something is missing"})
+        }
+
+        const user = await users.findAll({ where: { email:email } });
+        console.log(user)
+        if(user){
+            const passwords=await users.findOne({where:{password}})
+            console.log(passwords)
+            if(passwords){
+                res.json({res:"loginsuccessfull"})
+            }else{
+                res.status(404).json({res:"wrong password"})
+                console.log("wrong password")
+            }
+        }else{
+           res.status(400).json({error:"user do not exist"})
+        }
+
+    }catch(e){
+        res.json({error:e})
+    }
+}
+
 

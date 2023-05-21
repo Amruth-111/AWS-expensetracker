@@ -15,9 +15,9 @@ async function loginpage(e){
             password:password.value,
         }
     
-        let data=await axios.post("http://localhost:8080/user/signin",loginObj)
-        console.log(data)
-
+        let response=await axios.post("http://localhost:8080/user/signin",loginObj)
+            alert(response.data.message)
+            console.log(response)
     }catch(e){
         console.log(e)
     }
