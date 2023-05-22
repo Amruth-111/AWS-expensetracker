@@ -16,11 +16,11 @@ async function loginpage(e){
         }
     
         let response=await axios.post("http://localhost:8080/user/signin",loginObj)
-            alert(response.data.message)
-            console.log(response)
+            alert(response.data.mess)
+            window.location.href="./expenses.html";
     }catch(e){
         console.log(e)
-        document.body.innerHTML+=`<div style='color:red'>${e.error}</div>`
+        document.body.innerHTML+=`<div style='color:red'>${e.message}</div>`
 
     }
    
