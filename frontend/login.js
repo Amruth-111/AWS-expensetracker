@@ -20,6 +20,8 @@ async function loginpage(e){
             console.log(response)
     }catch(e){
         console.log(e)
+        document.body.innerHTML+=`<div style='color:red'>${e.error}</div>`
+
     }
    
 }

@@ -23,6 +23,7 @@ async function submitSignup(e){
     password.value=""
 }catch(e){
     console.log(`${e}`)
+    document.body.innerHTML+=`<div style='color:red'>${e.message}</div>`
 }
 }
 

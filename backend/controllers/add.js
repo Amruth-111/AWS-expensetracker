@@ -1,4 +1,5 @@
 
+let bcrypt=require('bcrypt')
 let users=require('../models/define');
 
 function isStringInvalid(string){
@@ -15,17 +16,17 @@ exports.signup=async(req,res)=>{
         if(isStringInvalid(name) || isStringInvalid(email) || isStringInvalid(password)){
            return res.status(400).json({error:"something is missing"})
         }
-
-        const data=await users.create({
-            name:name,
-            email:email,
-            password:password
-    })
-    res.status(201).json({useradd:data})
+        bcrypt.hash(password,10,async(err,hash)=>{
+            await users.create({
+                name:name,
+                email:email,
+                password:hash
+        })
+        })
+    res.status(201).json({message:"signup successfull"})
     }catch(e){
         console.log("error in signup method");
         res.status(404).json({error:e})
-        res.json({error:"kunne email unique kodu"})
     }
     
 }
@@ -41,16 +42,24 @@ exports.signin=async(req,res)=>{
         console.log('this user',user)
         console.log('user',user[0])
         if(user.length>0){
-            if(user[0].password===password){
-                console.log('password',password)
-                res.json({res:"loginsuccessfull"})
+            bcrypt.compare(password,user[0].password,(err,result)=>{
+                if(err){
+                    res.status(500).json({success:false,message:"something went wrong"})
+                }
+                if(result===true){
+                   res.status(201).json({success:true,message:"login successfull"}) 
+                }
+                else{
+                    res.status(500).json({success:false,message:"password doesnt match"})
+                }
+            })
             }else{
-                res.status(404).json({res:"wrong password"})
-                console.log("wrong password")
+                res.status(404).json({success:false,message:"user doesnot exist"})
+                console.log("userdoesnot exist")
             }
         }
 
-    }catch(e){
+    catch(e){
         res.json({error:e})
     }
 }
