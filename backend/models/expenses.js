@@ -1,29 +1,26 @@
 let Sequelize=require('sequelize');
 let sequelize=require('../util/database');
 
-let user=sequelize.define("users",{
+let expenses=sequelize.define("expenses",{
     id:{
         type:Sequelize.INTEGER,
         allowNull:false,
         primaryKey:true,
         autoIncrement:true
     },
-    name:{
+    amount:{
+        type:Sequelize.INTEGER,
+        allowNull:false,
+    },
+    description:{
         type:Sequelize.STRING,
         allowNull:false,
     },
-    email:{
+    category:{
         type:Sequelize.STRING,
         allowNull:false,
-        unique:true
-    },
-    password:{
-        type:Sequelize.STRING,
-        allowNull:false,
-        unique:true
     }
 
 })
 
-
-module.exports=user;
+module.exports=expenses;

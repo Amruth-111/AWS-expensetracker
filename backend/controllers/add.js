@@ -2,7 +2,7 @@
 let bcrypt=require('bcrypt')
 let users=require('../models/define');
 
-function isStringInvalid(string){
+exports.isStringInvalid=(string)=>{
     if(string===undefined || string.length===0){
         return true;
     }else{
@@ -39,8 +39,8 @@ exports.signin=async(req,res)=>{
         }
 
         const user = await users.findAll({ where: { email:email } });
-        console.log('this user',user)
-        console.log('user',user[0])
+        // console.log('this user',user)
+        // console.log('user',user[0])
         if(user.length>0){
             bcrypt.compare(password,user[0].password,(err,result)=>{
                 if(err){
