@@ -7,14 +7,15 @@ let parentNode=document.getElementById("allExpenses")
 
 window.addEventListener("DOMContentLoaded", async()=>{
     try{
-        let response=await axios.get("http://localhost:8080/user/show-expenses")
+        const token=localStorage.getItem("token");
+        let response=await axios.get("http://localhost:8080/expense/show-expenses",{headers:{'Authentication':token}})
         console.log(response);
         console.log(response.data)
         for(let i=0;i<response.data.allexpenses.length;i++){
             showBrowser(response.data.allexpenses[i])
         }
     }catch(err){
-        console.log("DOM get error-->",err)
+        console.log("DOM get error-->",err) 
     }
 })
 
@@ -31,12 +32,14 @@ async function showBrowser(data){
 }
 
 async function deleteExpense(key){
-    await axios.delete(`http://localhost:8080/user/delete-expenses,${key}`)
+    const token=localStorage.getItem("token");
+    await axios.delete(`http://localhost:8080/expense/delete-expenses/${key}`,{headers:{'Authentication':token}})
     const child=document.getElementById(key)
     parentNode.removeChild(child)
 }
 
 button.addEventListener("click",async(e)=>{
+    const token=localStorage.getItem("token");
     console.log("button is clicked")
     try{
         e.preventDefault();
@@ -45,11 +48,8 @@ button.addEventListener("click",async(e)=>{
             description:description.value,
             category:category.value
         }
-        // console.log(exp_obj)
-        // console.log(exp_obj.amount)
-        // console.log(exp_obj.category)
 
-        let response=await axios.post("http://localhost:8080/user/expenses",exp_obj)
+        let response=await axios.post("http://localhost:8080/expense/expenses",exp_obj,{headers:{'Authentication':token}})
         console.log(response.data.newexpense);
         showBrowser(response.data.newexpense);
     

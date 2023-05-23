@@ -16,7 +16,10 @@ async function loginpage(e){
         }
     
         let response=await axios.post("http://localhost:8080/user/signin",loginObj)
-            alert(response.data.mess)
+            localStorage.setItem('token',response.data.token)
+            alert(response.data.message);
+            console.log(response.data.token)
+
             window.location.href="./expenses.html";
     }catch(e){
         console.log(e)

@@ -16,7 +16,7 @@ async function submitSignup(e){
     }
     const data=await axios.post("http://localhost:8080/user/signup",my_obj)
     console.log(data)
-
+    window.location.href="./login.html";
         
     userName.value=""
     email.value=""

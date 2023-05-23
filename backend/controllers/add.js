@@ -1,6 +1,7 @@
 
 let bcrypt=require('bcrypt')
-let users=require('../models/define');
+let users=require('../models/users');
+let jwt=require('jsonwebtoken')
 
 function isStringInvalid(string){
     if(string===undefined || string.length===0){
@@ -30,6 +31,9 @@ exports.signup=async(req,res)=>{
     }
     
 }
+function generateAccessToken(id){
+    return jwt.sign({userId:id},"amsnshshadshkncm283u2oi901nxkjINZ9N0Z90219");
+}
 
 exports.signin=async(req,res)=>{
     try{
@@ -47,7 +51,7 @@ exports.signin=async(req,res)=>{
                     throw new Error("something went wrong")
                 }
                 if(result===true){
-                    return res.status(201).json({success:true,mess:"login successfull"}) 
+                    return res.status(201).json({success:true,message:"login successfull",token:generateAccessToken(user[0].id)}) 
                     
                 }
                 else{
