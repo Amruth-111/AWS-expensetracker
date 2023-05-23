@@ -15,15 +15,34 @@ async function loginpage(e){
             password:password.value,
         }
     
-        let response=await axios.post("http://localhost:8080/user/signin",loginObj)
-            localStorage.setItem('token',response.data.token)
-            alert(response.data.message);
-            console.log(response.data.token)
+        let data=await axios.post("http://localhost:8080/user/signin",loginObj)
+            localStorage.setItem('token',data.data.token)
+            alert(data.data.message);
+            console.log(data.data.token)
 
+            if(data.data.success===false){
+                const signinText=document.createTextNode(data.data.message)
+                    loginError.appendChild(signinText)
+                    loginError.style.color="red"
+                    console.log(loginError)
+                setTimeout(()=>{
+                    loginError.removeChild(signinText)
+                },4000)
+            }
+            if(data.data.success===true){
+                const loginText=document.createTextNode(data.data.message)
+                loginSuccess.appendChild(loginText)
+                loginSuccess.style.color="green"
+                console.log(loginSuccess)
+            setTimeout(()=>{
+                loginError.removeChild(signUpText)
+            },4000)
             window.location.href="./expenses.html";
+            }
+           
     }catch(e){
         console.log(e)
-        document.body.innerHTML+=`<div style='color:red'>${e.message}</div>`
+        // document.body.innerHTML+=`<div style='color:red'>${e.message}</div>`
 
     }
    

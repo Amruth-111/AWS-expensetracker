@@ -15,36 +15,35 @@ async function submitSignup(e){
         password:password.value
     }
     const data=await axios.post("http://localhost:8080/user/signup",my_obj)
-    console.log(data)
-    window.location.href="./login.html";
+    alert( data.data.message)
+    if(data.data.success===false){
+        const signUpText=document.createTextNode(data.data.message)
+            SignUperror.appendChild(signUpText)
+            SignUperror.style.color="red"
+            console.log(SignUperror)
+        setTimeout(()=>{
+            SignUperror.removeChild(signUpText)
+        },4000)
+    }
+    if(data.data.success===true){
+        const signUpText=document.createTextNode(data.data.message)
+        SignUperror.appendChild(signUpText)
+        SignUperror.style.color="green"
+        console.log(SignUperror)
+    setTimeout(()=>{
+        SignUperror.removeChild(signUpText)
+    },4000)
+    }
+     window.location.href="./login.html";
         
     userName.value=""
     email.value=""
     password.value=""
 }catch(e){
     console.log(`${e}`)
-    document.body.innerHTML+=`<div style='color:red'>${e.message}</div>`
+   
 }
 }
 
 
 
-//Errors in front end
-    //     if(data.data.success===false){
-    //     const signUpText=document.createTextNode(data.data.message)
-    //         SignUperror.appendChild(signUpText)
-    //         SignUperror.style.color="red"
-    //         console.log(SignUperror)
-    //     setTimeout(()=>{
-    //         SignUperror.removeChild(signUpText)
-    //     },4000)
-    // }
-    // if(data.data.success===true){
-    //     const signUpText=document.createTextNode(data.data.message)
-    //     SignUperror.appendChild(signUpText)
-    //     SignUperror.style.color="green"
-    //     console.log(SignUperror)
-    // setTimeout(()=>{
-    //     SignUperror.removeChild(signUpText)
-    // },4000)
-    // }
