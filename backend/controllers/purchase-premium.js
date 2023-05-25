@@ -41,10 +41,13 @@ exports.updatetransactionstatus=async(req,res)=>{
             res.json({message:"payment is failed"})
            return order.update({paymentid:payment_id,status:"FAILED"})
         }
-        await order.update({paymentid:payment_id,status:"SUCCESSFULL"})
-        await user.update({ispremium:true} ,{where: {id:req.user.id}} )
-        return res.json({success:true,message:"transcation successfull"})
-
+        promise1= order.update({paymentid:payment_id,status:"SUCCESSFULL"})
+        promise2= user.update({ispremium:true} ,{where: {id:req.user.id}} )
+        Promise.all([promise1,promise2]).then(()=>{
+            return res.json({success:true,message:"transcation successfull"})
+        }).catch((err)=>{
+            throw new Error("error in promise")
+        })  
     }catch(e){
         throw new Error(error)
     }

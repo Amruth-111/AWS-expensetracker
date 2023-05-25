@@ -86,7 +86,7 @@ document.getElementById("premium").onclick=async(e)=>{
         rzp1.open();
         e.preventDefault();
     
-        rzp1.on("payment.fail",async(response)=>{
+        rzp1.on("payment.failed",async()=>{
             try{
                 let key=response.data.order.id
                 await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
