@@ -10,18 +10,18 @@
 <style>
     body{
         justify-content: center;
-        background-color: black;
+        background-color: #020a00;
         background-repeat: no-repeat;
         background-size: cover;
         font-family: Georgia, 'Times New Roman', Times, serif;
     }
     #form{
-        margin-top: 50px;
+        margin-top: 30px;
         padding-bottom: 50px;
         text-decoration: none;
       background-color: aliceblue;
       background-repeat: no-repeat;
-        background-size: cover;
+        /* background-size: cover; */
       text-align: center;
       border-radius: 15px;
     }
@@ -31,9 +31,10 @@
        
     }
     .container{
-     max-width: 90%;
-     width:50%;
-        
+     max-width: 100%;
+     max-height: 100%;
+     width:70%;
+     height:50%;
     }
     label{
             font-weight:bolder ;
@@ -66,21 +67,48 @@
         margin-top: 13px;
         padding: 5px;
     }
+    .my-button{
+        background-color:rgb(126, 181, 226);
+        height:40px;
+    }
+    .my-button:hover{
+        background-color: rgb(68, 218, 232);
+    }
+    header{
+    background-color: rgb(76, 76, 247);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    }
+
+    h1{
+        /* background-image: url("../images/money.png"); */
+        border-radius: 50px;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+
+
 </style>
 <body>
+   
+    
    <main>
-    <div class="container">
+    <header>
+        <h1>Expense tracker</h1>
+    </header>
+    
+    <!-- <div class="container"> -->
     <form action="#" id="form">
-        <div class="heading">Expense tracker</div><br>
         <div id="error"></div>
         <label for="amount" class="bg-transparent">Choose Expense Amount:</label><br>
-        <input type="number"  id="amount"  required>
+        <input type="number"  id="amount">
         <br>
         <label for="description">Choose Description:</label><br>
-        <input type="text" id="description"  pattern=[A-Za-z] required>
+        <input type="text" id="description"  pattern=[A-Za-z] >
         <br>
         <label for="category">Choose Category:</label><br>
-        <select name="category" id="category"  required>
+        <select name="category" id="category">
             <option value="" selected>--Please choose an option--</option>
             <option value="movies">movies</option>
             <option value="fuel">fuel</option>
@@ -90,9 +118,12 @@
         <br>
         <input type="button" class="btn btn-control" id="press" value="submit">
         <br><br>
+        <button class="my-button" id="premium">Buy premium</button>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <br><br>
         <ol id="allExpenses"></ol>
 </form>
-</div>
+<!-- </div> -->
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script src="expenses.js"></script>

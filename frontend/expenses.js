@@ -4,11 +4,12 @@ let category=document.getElementById("category")
 let button=document.getElementById("press")
 let error=document.getElementById("error")
 let parentNode=document.getElementById("allExpenses")
+// let premiumbtn=document.getElementById("premium")
 
 window.addEventListener("DOMContentLoaded", async()=>{
     try{
         const token=localStorage.getItem("token");
-        let response=await axios.get("http://localhost:8080/expense/show-expenses",{headers:{'Authentication':token}})
+        let response=await axios.get("http://localhost:8081/expense/show-expenses",{headers:{'Authentication':token}})
         console.log(response);
         console.log(response.data)
         for(let i=0;i<response.data.allexpenses.length;i++){
@@ -33,7 +34,7 @@ async function showBrowser(data){
 
 async function deleteExpense(key){
     const token=localStorage.getItem("token");
-    await axios.delete(`http://localhost:8080/expense/delete-expenses/${key}`,{headers:{'Authentication':token}})
+    await axios.delete(`http://localhost:8081/expense/delete-expenses/${key}`,{headers:{'Authentication':token}})
     const child=document.getElementById(key)
     parentNode.removeChild(child)
 }
@@ -49,7 +50,7 @@ button.addEventListener("click",async(e)=>{
             category:category.value
         }
 
-        let response=await axios.post("http://localhost:8080/expense/expenses",exp_obj,{headers:{'Authentication':token}})
+        let response=await axios.post("http://localhost:8081/expense/expenses",exp_obj,{headers:{'Authentication':token}})
         console.log(response.data.newexpense);
         showBrowser(response.data.newexpense);
     
@@ -62,3 +63,46 @@ button.addEventListener("click",async(e)=>{
     category.value="";
     description.value="";
 })
+
+document.getElementById("premium").onclick=async(e)=>{
+    try{
+        let token=localStorage.getItem("token");
+        console.log(token)
+        let response=await axios.get("http://localhost:8081/purchase/buy-premium",{headers:{"Authentication":token}})
+        console.log(response)
+        let options={
+            'key':response.data.key_id,
+            "order_id":response.data.order.id,
+            "handler":async function(response){
+                await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
+                    order_id:options.order_id,
+                    payment_id:response.razorpay_payment_id
+                },{headers:{"Authentication":token}})
+                alert("you are a premium user now")
+            },
+    
+        }
+        const rzp1=new Razorpay(options);
+        rzp1.open();
+        e.preventDefault();
+    
+        rzp1.on("payment.fail",async(response)=>{
+            try{
+                let key=response.data.order.id
+                await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
+                    order_id:key,
+                    payment_id:null
+                },{headers:{"Authentication":token}})
+                alert(response.data.message)
+            }catch(e){
+                console.log("error in payment fail section",e)
+            }
+            
+        })
+           
+    }catch(err){
+        console.log("err in front end of razorpay",e)
+    }
+    
+    
+} 

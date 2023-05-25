@@ -1,9 +1,12 @@
 const User=require('../models/users');
-let jwt=require('jsonwebtoken')
+const jwt=require('jsonwebtoken')
 
 const authentication=async(req,res,next)=>{
+    const token=req.header('Authentication');
+    console.log(token)
     try{
         const token=req.header('Authentication');
+        console.log(token)
         const user =jwt.verify(token,"amsnshshadshkncm283u2oi901nxkjINZ9N0Z90219");
         if(!user){
             return res.status(404).json({message:"there is no such userid"})
@@ -14,6 +17,7 @@ const authentication=async(req,res,next)=>{
         next();
     }catch(e){
         console.log(e);
+        console.log("jws fucoink")
         res.status(500).json({success:false})
     }
 }
