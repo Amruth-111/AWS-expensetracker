@@ -2,6 +2,15 @@
 const Razorpay=require('razorpay');
 let purchase=require('../models/purchase')
 let user=require('../models/users')
+let expense=require('../models/expenses')
+let jwt=require('jsonwebtoken');
+const expenses = require('../models/expenses');
+
+// let userJWTgenerator=require('./add')
+
+function generateAccessToken(id,ispremium){
+    return jwt.sign({userId:id,ispremium},"amsnshshadshkncm283u2oi901nxkjINZ9N0Z90219");
+}
 
 exports.buypremium=async(req,res)=>{
     console.log(process.env.KEY_ID)
@@ -34,82 +43,61 @@ exports.buypremium=async(req,res)=>{
 }
 
 exports.updatetransactionstatus=async(req,res)=>{
-    try{
-        const{payment_id,order_id}=req.body;
-        let order=await purchase.findOne({where:{orderid:order_id}})
-        if(payment_id===null){
-            res.json({message:"payment is failed"})
-           return order.update({paymentid:payment_id,status:"FAILED"})
+    try {
+            const payment_id=req.body.payment_id
+            const order_id=req.body.order_id
+            console.log(payment_id)
+            
+            const order=await purchase.findOne({where:{orderid:order_id}})
+            
+            if(payment_id===null){
+                res.json({message:"payment is failed"})
+              return  order.update({paymentid:payment_id,status:"FAILED"})
+            }
+            function updateTable(order){
+               return new Promise((resolve)=>{
+                    resolve(order.update({paymentid:payment_id,status:"SUCCESS"}))
+               }) 
+            }
+            function updateUserTable(){
+                return new Promise((resolve)=>{
+                   resolve(req.user.update({premium:true}))
+                })
+            }
+            Promise.all([updateTable(order),updateUserTable()]).then(()=>{
+                res.json({success:true,token:generateAccessToken(req.user.id,true),message:"Hurrey..!! you are a premium user now"})
+            })
+        }catch(err){
+            console.log("error in update transaction",err)
+            res.json({Error:err})
         }
-        promise1= order.update({paymentid:payment_id,status:"SUCCESSFULL"})
-        promise2= user.update({ispremium:true} ,{where: {id:req.user.id}} )
-        Promise.all([promise1,promise2]).then(()=>{
-            return res.json({success:true,message:"transcation successfull"})
-        }).catch((err)=>{
-            throw new Error("error in promise")
-        })  
-    }catch(e){
-        throw new Error(error)
-    }
-}
-
-
-    // try{
-    //         const payment_id=req.body.payment_id
-    //         const order_id=req.body.order_id
-    //         console.log(payment_id)
-            
-    //         const order=await purchase.findOne({where:{orderid:order_id}})
-            
-    //         if(payment_id===null){
-    //             res.json({message:"payment is failed"})
-    //           return  order.update({paymentid:payment_id,status:"FAILED"})
-    //         }
-    //         function updateTable(order){
-    //            return new Promise((resolve)=>{
-    //                 resolve(order.update({paymentid:payment_id,status:"SUCCESS"}))
-    //            }) 
-    //         }
-    //         function updateUserTable(){
-    //             return new Promise((resolve)=>{
-    //                resolve(req.user.update({premium:true}))
-    //             })
-    //         }
-    //         Promise.all([updateTable(order),updateUserTable()]).then(()=>{
-    //             res.json({success:true,token:createToken(req.user.id,true)})
-    //         })
-    //     }catch(err){
-    //         console.log("error in update transaction",err)
-    //         res.json({Error:err})
-    //     }
    
 
-    // }
+    }
 
-// try{
-//     const paymentid=req.body.payment_id
-//     const orderid=req.body.order_id
-    
-//     const result=await orderDb.findOne({where:{orderId:orderid}})
-    
-//     if(paymentid===null){
-//         res.json({message:"payment is failed"})
-//       return  result.update({paymentId:paymentid,status:"FAILED"})
-//     }
-//     function updateTable(result){
-//        return new Promise((resolve)=>{
-//             resolve(result.update({paymentId:paymentid,status:"SUCCESS"}))
-//        }) 
-//     }
-//     function updateUserTable(){
-//         return new Promise((resolve)=>{
-//            resolve(req.user.update({premium:true}))
-//         })
-//     }
-//     Promise.all([updateTable(result),updateUserTable()]).then(()=>{
-//         res.json({success:true,token:createToken(req.user.id,true)})
-//     })
-// }catch(err){
-//     console.log("error in update transaction",err)
-//     res.json({Error:err})
-// }
+exports.premium_features=async(req,res)=>{
+    try{
+        let users=await user.findAll();
+        let expenses=await expense.findAll();
+        const userAggregatedExpenses=[];
+        console.log(expenses);
+
+        expenses.forEach((expense)=>{
+            if(userAggregatedExpenses[expense.userId]){
+                userAggregatedExpenses[expense.userId]+=expense.amount;
+            }else{
+                userAggregatedExpenses[expense.userId]=expense.amount
+            }
+        })
+        var userleaderboarddetails=[];
+        users.foreach(user=>{
+            userleaderboarddetails.push({name:user.name,total_amount:userAggregatedExpenses[user.id]})
+        })
+
+        console.log(userleaderboarddetails)
+        res.json(userleaderboarddetails)
+
+    }catch(e){
+        res.json("error in leaderboard secton")
+    }
+}

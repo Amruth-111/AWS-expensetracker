@@ -4,11 +4,35 @@ let category=document.getElementById("category")
 let button=document.getElementById("press")
 let error=document.getElementById("error")
 let parentNode=document.getElementById("allExpenses")
-// let premiumbtn=document.getElementById("premium")
+let success=document.getElementById("success")
 
+function ispremium(){
+    let successTxt=document.createTextNode("You are a premium user..!!!");
+    success.appendChild(successTxt);
+    success.style.color="green";
+    document.getElementById("premium").style.visibility="hidden"
+    
+}
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
 window.addEventListener("DOMContentLoaded", async()=>{
     try{
         const token=localStorage.getItem("token");
+        const isdecodedpremium=parseJwt(token);
+        console.log(isdecodedpremium)
+        const isPremiumUser=isdecodedpremium.ispremium
+        if(isPremiumUser){
+            ispremium()
+            showleaderboard();
+        }
         let response=await axios.get("http://localhost:8081/expense/show-expenses",{headers:{'Authentication':token}})
         console.log(response);
         console.log(response.data)
@@ -74,13 +98,18 @@ document.getElementById("premium").onclick=async(e)=>{
             'key':response.data.key_id,
             "order_id":response.data.order.id,
             "handler":async function(response){
-                await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
+                let result=await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
                     order_id:options.order_id,
                     payment_id:response.razorpay_payment_id
                 },{headers:{"Authentication":token}})
                 alert("you are a premium user now")
+                let successTxt=document.createTextNode(result.data.message);
+                success.appendChild(successTxt);
+                success.style.color="green";
+                document.getElementById("premium").style.visibility="hidden"
+                localStorage.setItem("token",result.data.token)
+
             },
-    
         }
         const rzp1=new Razorpay(options);
         rzp1.open();
@@ -89,15 +118,18 @@ document.getElementById("premium").onclick=async(e)=>{
         rzp1.on("payment.failed",async()=>{
             try{
                 let key=response.data.order.id
-                await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
+                let failed=await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
                     order_id:key,
                     payment_id:null
                 },{headers:{"Authentication":token}})
-                alert(response.data.message)
+                alert(failed.data.message)
+                let successTxt=document.createTextNode(failed.data.message);
+                success.appendChild(successTxt);
+                success.style.color="red";
+                showleaderboard()
             }catch(e){
                 console.log("error in payment fail section",e)
             }
-            
         })
            
     }catch(err){
@@ -106,3 +138,23 @@ document.getElementById("premium").onclick=async(e)=>{
     
     
 } 
+
+
+async function showleaderboard(){
+    let token=localStorage.getItem("token")
+    let parent=document.getElementById("leaderboard")
+    let button=document.createElement('input')
+    button.type="button";
+    button.value="show leaderboard";
+    button.onclick=async()=>{
+        let userleaderboardarray=await axios.get("http://localhost:8081/premium/show-leaderboard",{headers:{"Authentication":token}})
+        console.log(userleaderboardarray.data.userleaderboarddetails);
+        let leaderboard=userleaderboardarray.data.userleaderboarddetails
+        let leaderboards=document.getElementById("list");
+        leaderboard.forEach(userdetails => {
+        leaderboards.innerHTML+=`<li>Name-${userdetails.name}--Total expense-${userdetails.total_amount}`
+        });
+    }
+    parent.appendChild(button)
+    
+}

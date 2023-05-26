@@ -10,7 +10,7 @@
 <style>
     body{
         justify-content: center;
-        background-color: #020a00;
+        background-color: #c8e9c0;
         background-repeat: no-repeat;
         background-size: cover;
         font-family: Georgia, 'Times New Roman', Times, serif;
@@ -118,11 +118,17 @@
         <br>
         <input type="button" class="btn btn-control" id="press" value="submit">
         <br><br>
+</form>
+<form id="form" action="#">
+    <div id="success"></div>
         <button class="my-button" id="premium">Buy premium</button>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <div id="leaderboard"></div>
         <br><br>
+        <ol id="list"></ol>
         <ol id="allExpenses"></ol>
 </form>
+</main>
 <!-- </div> -->
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>

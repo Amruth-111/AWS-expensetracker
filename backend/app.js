@@ -9,6 +9,7 @@ const exptable=require('./models/expenses')
 const users=require('./routes/user');
 const expenses=require('./routes/expenses');
 const purchase=require('./routes/purchase');
+const premium=require('./routes/premium')
 const premiumtable=require('./models/purchase');
 
 
@@ -25,6 +26,7 @@ premiumtable.belongsTo(usertable)
 app.use('/user',users)
 app.use('/expense',expenses)
 app.use('/purchase',purchase)
+app.use('/premium',premium)
 
 sequelize.sync().then(()=>{
     app.listen(8081)
