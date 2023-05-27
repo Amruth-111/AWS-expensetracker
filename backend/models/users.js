@@ -24,6 +24,10 @@ let user=sequelize.define("users",{
     },
     ispremium:{
         type:Sequelize.BOOLEAN
+    },
+    totalExpenses:{
+        type:Sequelize.INTEGER,
+        defaultValue:0
     }
 
 })

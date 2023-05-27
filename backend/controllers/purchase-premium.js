@@ -61,7 +61,7 @@ exports.updatetransactionstatus=async(req,res)=>{
             }
             function updateUserTable(){
                 return new Promise((resolve)=>{
-                   resolve(req.user.update({premium:true}))
+                   resolve(req.user.update({ispremium:true}))
                 })
             }
             Promise.all([updateTable(order),updateUserTable()]).then(()=>{
@@ -75,29 +75,3 @@ exports.updatetransactionstatus=async(req,res)=>{
 
     }
 
-exports.premium_features=async(req,res)=>{
-    try{
-        let users=await user.findAll();
-        let expenses=await expense.findAll();
-        const userAggregatedExpenses=[];
-        console.log(expenses);
-
-        expenses.forEach((expense)=>{
-            if(userAggregatedExpenses[expense.userId]){
-                userAggregatedExpenses[expense.userId]+=expense.amount;
-            }else{
-                userAggregatedExpenses[expense.userId]=expense.amount
-            }
-        })
-        var userleaderboarddetails=[];
-        users.foreach(user=>{
-            userleaderboarddetails.push({name:user.name,total_amount:userAggregatedExpenses[user.id]})
-        })
-
-        console.log(userleaderboarddetails)
-        res.json(userleaderboarddetails)
-
-    }catch(e){
-        res.json("error in leaderboard secton")
-    }
-}

@@ -1,4 +1,5 @@
 let expenses=require('../models/expenses');
+let user=require('../models/users')
 // let stringinvalid=require('./add')
 
 function isStringInvalid(string){
@@ -9,6 +10,7 @@ function isStringInvalid(string){
     }
 }
 
+let totalexpid;
 exports.addexpense=async(req,res)=>{
     try{
         let {amount,description,category}=req.body
@@ -19,8 +21,19 @@ exports.addexpense=async(req,res)=>{
             amount:amount,
             description:description,
             category:category,
-            userId:req.user.id
+            userId:expenseid
         })
+        const totalExpense=Number(req.user.totalExpenses)+Number(amount)
+        user.update({totalExpenses:totalExpense},
+            {
+                where:{id:req.user.id}
+            })
+        console.log(result)
+        // const users=await user.findByPk(totalexpid.id)
+        // console.log(users.totalExpenses)
+        // users.totalExpenses=Number(users.totalExpenses)+Number(amount)
+        // users.save();
+        // console.log(totalExpenses)
         res.json({newexpense:result})
     }catch(e){
         console.log("error in add method")
@@ -28,10 +41,12 @@ exports.addexpense=async(req,res)=>{
     }
     
 }
-
+let expenseid
 exports.showexpenses=async(req,res)=>{
+    totalexpid=req.user
+    expenseid=req.user.id
     try{
-        let allexpense=await expenses.findAll({where:{userId:req.user.id}});
+        let allexpense=await expenses.findAll({where:{userId:expenseid}});
         res.json({allexpenses:allexpense})
     }catch(e){
         res.status(404).json({error:e})

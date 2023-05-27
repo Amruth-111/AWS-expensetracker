@@ -75,7 +75,7 @@ button.addEventListener("click",async(e)=>{
         }
 
         let response=await axios.post("http://localhost:8081/expense/expenses",exp_obj,{headers:{'Authentication':token}})
-        console.log(response.data.newexpense);
+        console.log(response);
         showBrowser(response.data.newexpense);
     
     }catch(e){
@@ -141,20 +141,26 @@ document.getElementById("premium").onclick=async(e)=>{
 
 
 async function showleaderboard(){
-    let token=localStorage.getItem("token")
-    let parent=document.getElementById("leaderboard")
-    let button=document.createElement('input')
-    button.type="button";
-    button.value="show leaderboard";
-    button.onclick=async()=>{
+    try{
+        let token=localStorage.getItem("token")
+        let parent=document.getElementById("leaderboard")
+        let button=document.createElement('input')
+        button.type="button";
+        button.value="show leaderboard";
+        button.onclick=async()=>{
         let userleaderboardarray=await axios.get("http://localhost:8081/premium/show-leaderboard",{headers:{"Authentication":token}})
-        console.log(userleaderboardarray.data.userleaderboarddetails);
-        let leaderboard=userleaderboardarray.data.userleaderboarddetails
+        console.log(userleaderboardarray.data.leaderboardofusers);
+        let leaderboard=userleaderboardarray.data.leaderboardofusers
         let leaderboards=document.getElementById("list");
         leaderboard.forEach(userdetails => {
-        leaderboards.innerHTML+=`<li>Name-${userdetails.name}--Total expense-${userdetails.total_amount}`
+        leaderboards.innerHTML+=`<li>Name-${userdetails.name}--Total expense-${userdetails.totalExpenses}`
         });
     }
     parent.appendChild(button)
+
+    }catch(e){
+        console.log("error in leaderboard front end")
+    }
+    
     
 }
