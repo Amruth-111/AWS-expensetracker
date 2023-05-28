@@ -5,12 +5,17 @@ let button=document.getElementById("press")
 let error=document.getElementById("error")
 let parentNode=document.getElementById("allExpenses")
 let success=document.getElementById("success")
+const downloadbtn=document.getElementById("download")
 
 function ispremium(){
     let successTxt=document.createTextNode("You are a premium user..!!!");
     success.appendChild(successTxt);
     success.style.color="green";
     document.getElementById("premium").style.visibility="hidden"
+    let download=document.createElement(button);
+    download.createTextNode("download")
+    download.setAttribute("id","download")
+    downloadbtn.appendChild(download)
     
 }
 
@@ -106,6 +111,10 @@ document.getElementById("premium").onclick=async(e)=>{
                 let successTxt=document.createTextNode(result.data.message);
                 success.appendChild(successTxt);
                 success.style.color="green";
+                let download=document.createElement(button);
+                download.createTextNode("download")
+                download.setAttribute("id","download")
+                downloadbtn.appendChild(download)
                 document.getElementById("premium").style.visibility="hidden"
                 localStorage.setItem("token",result.data.token)
 
@@ -126,6 +135,7 @@ document.getElementById("premium").onclick=async(e)=>{
                 let successTxt=document.createTextNode(failed.data.message);
                 success.appendChild(successTxt);
                 success.style.color="red";
+                
                 showleaderboard()
             }catch(e){
                 console.log("error in payment fail section",e)
