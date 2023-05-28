@@ -2,14 +2,14 @@ const User=require('../models/users');
 const jwt=require('jsonwebtoken')
 
 const authentication=async(req,res,next)=>{
-    const token=req.header('Authentication');
-    console.log(token)
+    // const token=req.header('Authentication');
+    // console.log(token)
     try{
         const token=req.header('Authentication');
         console.log(token)
         const user =jwt.verify(token,"amsnshshadshkncm283u2oi901nxkjINZ9N0Z90219");
         if(!user){
-            return res.status(404).json({message:"there is no such userid"})
+            return res.json({message:"there is no such userid"})
         }
         console.log(user.userId)
         let person=await User.findByPk(user.userId)
