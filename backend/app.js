@@ -11,6 +11,8 @@ const expenses=require('./routes/expenses');
 const purchase=require('./routes/purchase');
 const premium=require('./routes/premium')
 const premiumtable=require('./models/purchase');
+const forgotpass=require('./routes/forgotpass')
+const forgotpassword=require('./models/forgot')
 
 
 const app=express();
@@ -23,10 +25,15 @@ exptable.belongsTo(usertable);
 usertable.hasMany(premiumtable)
 premiumtable.belongsTo(usertable)
 
+
+usertable.hasMany(forgotpassword);
+forgotpassword.belongsTo(usertable);
+
 app.use('/user',users)
 app.use('/expense',expenses)
 app.use('/purchase',purchase)
 app.use('/premium',premium)
+app.use('/password',forgotpass)
 
 sequelize.sync().then(()=>{
     app.listen(8081)
