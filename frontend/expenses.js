@@ -194,7 +194,7 @@ async function downloaded(){
         const downloadedres=await axios.get("http://localhost:8081/expense/download-expenses",{headers:{"Authentication":token}})
         if(downloadedres.data.success===true){
             var a =document.createElement('a');
-            a.href=downloadedres.data.fileUrl
+            a.href=downloadedres.data.Url
             a.download='myexpenses.csv'
             a.click()
         }else{

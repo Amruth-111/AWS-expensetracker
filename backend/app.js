@@ -13,6 +13,7 @@ const premium=require('./routes/premium')
 const premiumtable=require('./models/purchase');
 const forgotpass=require('./routes/forgotpass')
 const forgotpassword=require('./models/forgot')
+const download=require('./models/downloaddb')
 
 
 const app=express();
@@ -22,12 +23,15 @@ app.use(bodyparser.json())
 usertable.hasMany(exptable);
 exptable.belongsTo(usertable);  
 
-usertable.hasMany(premiumtable)
-premiumtable.belongsTo(usertable)
-
+usertable.hasMany(premiumtable);
+premiumtable.belongsTo(usertable);
 
 usertable.hasMany(forgotpassword);
 forgotpassword.belongsTo(usertable);
+
+usertable.hasMany(download);
+download.belongsTo(usertable);
+
 
 app.use('/user',users)
 app.use('/expense',expenses)

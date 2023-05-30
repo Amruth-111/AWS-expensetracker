@@ -48,7 +48,7 @@
         font-family: inherit;
     }
     select{
-        width: 75%;
+        width: 5%;
         font-family: inherit;
         height: 40px;
         border-radius: 8px;
@@ -140,6 +140,14 @@
         <ol id="list"></ol>
         <hr>
         <h4>All Expenses</h4>
+        <hr><hr>
+        <select name="pagesize" id="pagesize">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="25">25</option>
+        </select>
+        <hr>
         <table class="table text-white">
             <thead>
                 <tr>
@@ -152,6 +160,7 @@
             </thead>
         </table>
         <ol id="allExpenses"></ol>
+        <ul id="pagination"></ul>
         <hr>
 </form>
 </main>

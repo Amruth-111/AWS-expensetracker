@@ -2,7 +2,9 @@ let expenses=require('../models/expenses');
 let user=require('../models/users');
 const sequelize = require('../util/database');
 const AWS=require('aws-sdk')
+const downloaddb=require('../models/downloaddb')
 // let stringinvalid=require('./add')
+
 
 
 
@@ -135,7 +137,13 @@ exports.downloadexpenses=async(req,res)=>{
         const userId=req.user.id
         let fileName=`expense.txt${userId}/${new Date()}`
         let fileurl=await uploadtos3(stringifiedexp,fileName);
-        res.status(201).json({fileurl,success:true})
+
+       //storing url in download table
+       const data=await req.user.createDownload({
+        url:fileurl
+       })
+        const fetchData=await downloaddb.findAll({where:{userId:req.user.id}})
+        res.json({Url:fileurl,alldata:fetchData,success:true})
     }catch(e){
         console.log(e);
         res.status(500).json({err:e,success:false})
