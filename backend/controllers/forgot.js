@@ -130,12 +130,6 @@ exports.updatepass=async(req,res)=>{
         const row=await forgotpassword.findOne({ where : { id: resetid }})
         const users=await user.findOne({where: { id : row.userId}})
         if(users){
-            // const saltRounds = 10;
-            // bcrypt.genSalt(saltRounds, async(err, salt)=> {
-            //     if(err){
-            //         console.log(err);
-            //         throw new Error(err);
-            //     }
                 bcrypt.hash(newpassword,10,async(err,hash)=>{
                     if(err){
                         console.log(err);
@@ -143,9 +137,7 @@ exports.updatepass=async(req,res)=>{
                     }
                     await users.update({password:hash})
                     return res.json({message:"password updated successfully",success:true})
-                })
-            // })      
-
+                })    
         }else{
             return res.json({message:"no user exists",success:false})
         }

@@ -1,7 +1,10 @@
 let expenses=require('../models/expenses');
 let user=require('../models/users');
 const sequelize = require('../util/database');
+const AWS=require('aws-sdk')
 // let stringinvalid=require('./add')
+
+
 
 function isStringInvalid(string){
     if(string===undefined || string.length===0){
@@ -90,5 +93,55 @@ exports.deleteexpenses=async(req,res)=>{
         console.log("error in expenses delete method")
         res.json({error:e})
     }
+}
+
+
+function uploadtos3(data,filename){
+    const BUCKET_NAME=process.env.BUCKET_NAME
+    const IAM_USER_KEY=process.env.IAM_USER_KEY
+    const IAM_USER_SECRET=process.env.IAM_USER_SECRET
+
+
+    let s3bucket=new AWS.S3({
+        accessKeyId:IAM_USER_KEY,
+        secretAccessKey:IAM_USER_SECRET,
+    })
+
+    var params={
+        Bucket:BUCKET_NAME,
+        Key:filename,
+        Body:data,
+        ACL:'public-read'
+    }
+    console.log(BUCKET_NAME,IAM_USER_SECRET)
+
+    return new Promise((resolve,reject)=>{
+        s3bucket.upload(params,(err,s3res)=>{
+            if(err){
+                console.log('something went wrong',err)
+                reject(err)
+            }else{
+                console.log("success",s3res)
+                resolve(s3res.Location)
+            }
+        })
+    })
+    
+}
+exports.downloadexpenses=async(req,res)=>{
+    try{
+        const expenses= await req.user.getExpenses();
+        let stringifiedexp=JSON.stringify(expenses)
+        const userId=req.user.id
+        let fileName=`expense.txt${userId}/${new Date()}`
+        let fileurl=await uploadtos3(stringifiedexp,fileName);
+        res.status(201).json({fileurl,success:true})
+    }catch(e){
+        console.log(e);
+        res.status(500).json({err:e,success:false})
+
+    }
+    // console.log(req.user.__proto__)
+   
 }
 

@@ -12,10 +12,15 @@ function ispremium(){
     success.appendChild(successTxt);
     success.style.color="green";
     document.getElementById("premium").style.visibility="hidden"
-    let download=document.createElement(button);
-    download.createTextNode("download")
-    download.setAttribute("id","download")
-    downloadbtn.appendChild(download)
+    // let download=document.createElement('button');
+    // download.innerHTML="Download"
+    // download.style.borderRadius="20px"
+    // download.style.marginTop="10px"
+
+    // // download.createTextNode("download")
+    // download.setAttribute("id","download")
+    // downloadbtn.appendChild(download)
+    downloaded();
     
 }
 
@@ -111,12 +116,10 @@ document.getElementById("premium").onclick=async(e)=>{
                 let successTxt=document.createTextNode(result.data.message);
                 success.appendChild(successTxt);
                 success.style.color="green";
-                let download=document.createElement(button);
-                download.createTextNode("download")
-                download.setAttribute("id","download")
-                downloadbtn.appendChild(download)
                 document.getElementById("premium").style.visibility="hidden"
                 localStorage.setItem("token",result.data.token)
+                showleaderboard();
+                downloaded();
 
             },
         }
@@ -136,7 +139,7 @@ document.getElementById("premium").onclick=async(e)=>{
                 success.appendChild(successTxt);
                 success.style.color="red";
                 
-                showleaderboard()
+               
             }catch(e){
                 console.log("error in payment fail section",e)
             }
@@ -157,6 +160,7 @@ async function showleaderboard(){
         let button=document.createElement('input')
         button.type="button";
         button.value="show leaderboard";
+        button.style.marginTop="10px"
         button.onclick=async()=>{
         let userleaderboardarray=await axios.get("http://localhost:8081/premium/show-leaderboard",{headers:{"Authentication":token}})
         console.log(userleaderboardarray.data.leaderboardofusers);
@@ -173,4 +177,38 @@ async function showleaderboard(){
     }
     
     
+}
+
+async function downloaded(){
+    try{
+    let token=localStorage.getItem("token");
+    let download=document.createElement('input');
+    download.type="button"
+    download.value="download"
+    download.style.borderRadius="20px"
+    download.style.marginTop="10px"
+    console.log(download)
+    // download.setAttribute("id","download")
+    download.onclick=async()=>{
+        console.log("d is clicked")
+        const downloadedres=await axios.get("http://localhost:8081/expense/download-expenses",{headers:{"Authentication":token}})
+        if(downloadedres.data.success===true){
+            var a =document.createElement('a');
+            a.href=downloadedres.data.fileUrl
+            a.download='myexpenses.csv'
+            a.click()
+        }else{
+            throw new Error(downloadedres.data.message)
+        }
+    }
+    downloadbtn.appendChild(download)
+
+    }catch(e){
+            console.log(e)
+    }
+
+    
+
+   
+
 }
