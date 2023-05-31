@@ -54,12 +54,69 @@ window.addEventListener("DOMContentLoaded", async()=>{
     }
 })
 
+async function pagination(){
+    try{
+    const token=localStorage.getItem(token);
+    let response=await axios.get("http://localhost:8081/expense/show-expenses",{headers:{'Authentication':token}})
+    let pagination=document.getElementById("pagination")
+
+    let totalPageSize=localStorage.getItem("pagesize");
+    const totalpage=Math.ceil((response.data.allExpenses.length)/totalPageSize)
+    if(!totalPageSize){
+        localStorage.setItem("pageSize",5)
+       }
+       const result=await axios.get(`"http://localhost:8081/expense/pagination?page=${1}&pagesize=${5}`,{headers:{"Authorization":token}})
+       let allExpense=response.data.Data
+       
+       for(let i=0;i<allExpense.length;i++){
+           
+           showBrowser(response.data.Data[i])    
+           }
+           for(let i=0;i<totalpage;i++){
+            let page=i+1
+            button=document.createElement("button")
+            button.innerHTML=i+1
+            
+                button.onclick=async()=>{
+                    parentNode.innerHTML=""
+                    const response=await axios.get(`http://localhost:8081/expense/pagination?page=${page}&pagesize=${totalPageSize}`,{headers:{"Authorization":token}})
+                    let allExpense=response.data.Data
+                    for(let i=0;i<allExpense.length;i++){
+                        showBrowser(response.data.Data[i])    
+                        }
+                } 
+        pagination.appendChild(button)
+        }  
+    }catch(err){
+        console.log("pagination error",err)
+    }
+   
+}
+
+
 async function showBrowser(data){
     try{
-        var childNode=`<li id=${data.id}>${data.amount}&nbsp;&nbsp;&nbsp;&nbsp;${data.description}&nbsp;&nbsp;&nbsp;&nbsp;${data.category}
-        <button class="btn bg-danger float-sm-end" onclick="deleteExpense(${data.id})">delete</button>
-        <button class="btn bg-primary float-sm-end" onclick="editExpense('${data.id}','${data.amount}','${data.description}','${data.category}')" >edit</button></li>`
-        parentNode.innerHTML=parentNode.innerHTML+childNode;
+
+        const pagesize=document.getElementById("pagesize")
+        pagesize.addEventListener("click",()=>{
+            localStorage.setItem("pageSize",pagesize.value)
+            window.location.reload()
+           })
+        const newExpense=`<table id=${show.id} class="table text-white ">
+        <tr>
+        <td><li></li></td>
+        <td>${show.amount}</td>
+        <td>${show.description}</td>
+        <td>${show.category}</td>
+        <td><button onclick="deleteExpense(${show.id})" style="float:right" class="btn btn-danger" >delete</button></td>
+        </tr>
+        </table>`
+        parentNode.innerHTML=parentNode.innerHTML+newExpense
+      
+        // var childNode=`<li id=${data.id}>${data.amount}&nbsp;&nbsp;&nbsp;&nbsp;${data.description}&nbsp;&nbsp;&nbsp;&nbsp;${data.category}
+        // <button class="btn bg-danger float-sm-end" onclick="deleteExpense(${data.id})">delete</button>
+        // <button class="btn bg-primary float-sm-end" onclick="editExpense('${data.id}','${data.amount}','${data.description}','${data.category}')" >edit</button></li>`
+        // parentNode.innerHTML=parentNode.innerHTML+childNode;
     }
     catch(err){
         console.log("showbrowser error!",err)

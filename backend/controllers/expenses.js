@@ -5,9 +5,6 @@ const AWS=require('aws-sdk')
 const downloaddb=require('../models/downloaddb')
 // let stringinvalid=require('./add')
 
-
-
-
 function isStringInvalid(string){
     if(string===undefined || string.length===0){
         return true;
@@ -151,5 +148,21 @@ exports.downloadexpenses=async(req,res)=>{
     }
     // console.log(req.user.__proto__)
    
+}
+
+exports.pagination=async(req,res)=>{
+    try{
+        const{page,pagesize}=req.query;
+        const limits=+pagesize
+        const data=  await expensedatabase.findAll({
+            offset:(page-1)*pagesize,
+            limit:limits,
+            where: { userId:req.user.id }
+        })
+        res.json({Data:data})
+    }catch(e){
+        console.log("pagination error-->",err)
+        res.json({Error:err})
+    }
 }
 
