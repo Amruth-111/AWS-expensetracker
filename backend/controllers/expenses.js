@@ -3,6 +3,7 @@ let user=require('../models/users');
 const sequelize = require('../util/database');
 const AWS=require('aws-sdk')
 const downloaddb=require('../models/downloaddb')
+require('dotenv').config();
 // let stringinvalid=require('./add')
 
 function isStringInvalid(string){

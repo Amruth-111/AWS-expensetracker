@@ -5,6 +5,7 @@ let user=require('../models/users')
 let expense=require('../models/expenses')
 let jwt=require('jsonwebtoken');
 const expenses = require('../models/expenses');
+require('dotenv').config();
 
 // let userJWTgenerator=require('./add')
 
@@ -71,7 +72,5 @@ exports.updatetransactionstatus=async(req,res)=>{
             console.log("error in update transaction",err)
             res.json({Error:err})
         }
-   
-
     }
 
