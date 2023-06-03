@@ -12,14 +12,11 @@ async function sendmail(e){
         let forgot_obj={
             email:email.value
         }
-        const response=await axios.post("http://localhost:8081/password/forgot_password",forgot_obj)
+        const response=await axios.post("http://13.49.241.184:8081/password/forgot_password",forgot_obj)
         console.log(response)
         console.log(response.message)
         if(response.data.success===true){
-            const successtxt=document.createTextNode(response.data.message)
-            success.appendChild(successtxt)
-            success.style.color="green"
-
+           password_Reset_success();
         }else{
             const successtxt=document.createTextNode("failed..!!")
             success.appendChild(successtxt)
@@ -30,4 +27,13 @@ async function sendmail(e){
     }
    
 
+}
+
+function password_Reset_success(){
+    const successtxt=document.createTextNode(response.data.message)
+    success.appendChild(successtxt)
+    success.style.color="green"
+    setTimeout(()=>{
+        success.removeChild(successtxt)
+    },5000)
 }

@@ -8,10 +8,11 @@ let success=document.getElementById("success")
 const downloadbtn=document.getElementById("download")
 
 function ispremium(){
-    let successTxt=document.createTextNode("You are a premium user..!!!");
-    success.appendChild(successTxt);
-    success.style.color="green";
-    document.getElementById("premium").style.visibility="hidden"
+    premium_success();
+    // let successTxt=document.createTextNode("You are a premium user..!!!");
+    // success.appendChild(successTxt);
+    // success.style.color="green";
+    // document.getElementById("premium").style.visibility="hidden"
     // let download=document.createElement('button');
     // download.innerHTML="Download"
     // download.style.borderRadius="20px"
@@ -43,12 +44,13 @@ window.addEventListener("DOMContentLoaded", async()=>{
             ispremium()
             showleaderboard();
         }
-        let response=await axios.get("http://localhost:8081/expense/show-expenses",{headers:{'Authentication':token}})
-        console.log(response);
-        console.log(response.data)
-        for(let i=0;i<response.data.allexpenses.length;i++){
-            showBrowser(response.data.allexpenses[i])
-        }
+        // let response=await axios.get("http://13.49.241.184:8081/expense/show-expenses",{headers:{'Authentication':token}})
+        // console.log(response);
+        // console.log(response.data)
+        // for(let i=0;i<response.data.allexpenses.length;i++){
+        //     showBrowser(response.data.allexpenses[i])
+        // }
+        pagination();
     }catch(err){
         console.log("DOM get error-->",err) 
     }
@@ -56,21 +58,23 @@ window.addEventListener("DOMContentLoaded", async()=>{
 
 async function pagination(){
     try{
-    const token=localStorage.getItem(token);
-    let response=await axios.get("http://localhost:8081/expense/show-expenses",{headers:{'Authentication':token}})
+    const token=localStorage.getItem('token');
+    let response=await axios.get("http://13.49.241.184:8081/expense/show-expenses",{headers:{'Authentication':token}})
+    console.log(response.data.allexpenses)
     let pagination=document.getElementById("pagination")
 
     let totalPageSize=localStorage.getItem("pagesize");
-    const totalpage=Math.ceil((response.data.allExpenses.length)/totalPageSize)
+    const totalpage=Math.ceil((response.data.allexpenses.length)/totalPageSize)
     if(!totalPageSize){
-        localStorage.setItem("pageSize",5)
+        localStorage.setItem("pagesize",5)
        }
-       const result=await axios.get(`"http://localhost:8081/expense/pagination?page=${1}&pagesize=${5}`,{headers:{"Authorization":token}})
-       let allExpense=response.data.Data
+       const result=await axios.get(`http://13.49.241.184:8081/expense/pagination?page=${1}&pagesize=${5}`,{headers:{"Authentication":token}})
+       let allExpense=result.data.Data
+       console.log(allExpense)
        
        for(let i=0;i<allExpense.length;i++){
            
-           showBrowser(response.data.Data[i])    
+           showBrowser(result.data.Data[i])    
            }
            for(let i=0;i<totalpage;i++){
             let page=i+1
@@ -79,10 +83,10 @@ async function pagination(){
             
                 button.onclick=async()=>{
                     parentNode.innerHTML=""
-                    const response=await axios.get(`http://localhost:8081/expense/pagination?page=${page}&pagesize=${totalPageSize}`,{headers:{"Authorization":token}})
-                    let allExpense=response.data.Data
+                    const ress=await axios.get(`http://13.49.241.184:8081/expense/pagination?page=${page}&pagesize=${totalPageSize}`,{headers:{"Authentication":token}})
+                    let allExpense=ress.data.Data
                     for(let i=0;i<allExpense.length;i++){
-                        showBrowser(response.data.Data[i])    
+                        showBrowser(ress.data.Data[i])    
                         }
                 } 
         pagination.appendChild(button)
@@ -94,7 +98,7 @@ async function pagination(){
 }
 
 
-async function showBrowser(data){
+async function showBrowser(show){
     try{
 
         const pagesize=document.getElementById("pagesize")
@@ -125,7 +129,7 @@ async function showBrowser(data){
 
 async function deleteExpense(key){
     const token=localStorage.getItem("token");
-    await axios.delete(`http://localhost:8081/expense/delete-expenses/${key}`,{headers:{'Authentication':token}})
+    await axios.delete(`http://13.49.241.184:8081/expense/delete-expenses/${key}`,{headers:{'Authentication':token}})
     const child=document.getElementById(key)
     parentNode.removeChild(child)
 }
@@ -141,7 +145,7 @@ button.addEventListener("click",async(e)=>{
             category:category.value
         }
 
-        let response=await axios.post("http://localhost:8081/expense/expenses",exp_obj,{headers:{'Authentication':token}})
+        let response=await axios.post("http://13.49.241.184:8081/expense/expenses",exp_obj,{headers:{'Authentication':token}})
         console.log(response);
         showBrowser(response.data.newexpense);
     
@@ -159,21 +163,19 @@ document.getElementById("premium").onclick=async(e)=>{
     try{
         let token=localStorage.getItem("token");
         console.log(token)
-        let response=await axios.get("http://localhost:8081/purchase/buy-premium",{headers:{"Authentication":token}})
+        let response=await axios.get("http://13.49.241.184:8081/purchase/buy-premium",{headers:{"Authentication":token}})
         console.log(response)
         let options={
             'key':response.data.key_id,
             "order_id":response.data.order.id,
             "handler":async function(response){
-                let result=await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
+                let result=await axios.post("http://13.49.241.184:8081/purchase/updatetransactionstatus",{
                     order_id:options.order_id,
                     payment_id:response.razorpay_payment_id
                 },{headers:{"Authentication":token}})
-                alert("you are a premium user now")
-                let successTxt=document.createTextNode(result.data.message);
-                success.appendChild(successTxt);
-                success.style.color="green";
-                document.getElementById("premium").style.visibility="hidden"
+                alert(result.data.message)
+                premium_success();
+                
                 localStorage.setItem("token",result.data.token)
                 showleaderboard();
                 downloaded();
@@ -187,7 +189,7 @@ document.getElementById("premium").onclick=async(e)=>{
         rzp1.on("payment.failed",async()=>{
             try{
                 let key=response.data.order.id
-                let failed=await axios.post("http://localhost:8081/purchase/updatetransactionstatus",{
+                let failed=await axios.post("http://13.49.241.184:8081/purchase/updatetransactionstatus",{
                     order_id:key,
                     payment_id:null
                 },{headers:{"Authentication":token}})
@@ -195,6 +197,9 @@ document.getElementById("premium").onclick=async(e)=>{
                 let successTxt=document.createTextNode(failed.data.message);
                 success.appendChild(successTxt);
                 success.style.color="red";
+                setTimeout(()=>{
+                    success.removeChild(successTxt)
+                },4000)
                 
                
             }catch(e){
@@ -210,21 +215,38 @@ document.getElementById("premium").onclick=async(e)=>{
 } 
 
 
+function premium_success(){
+    let successTxt=document.createTextNode('Hurrey..!! you are a premium user now');
+    success.appendChild(successTxt);
+    success.style.color="white";
+    document.getElementById("premium").style.visibility="hidden"
+    setTimeout(()=>{
+        success.removeChild(successTxt)
+    },5000)
+}
+
+
 async function showleaderboard(){
     try{
         let token=localStorage.getItem("token")
+        
         let parent=document.getElementById("leaderboard")
         let button=document.createElement('input')
         button.type="button";
+        button.className="my-button"
         button.value="show leaderboard";
         button.style.marginTop="10px"
+        console.log(button)
+        console.log(parent)
         button.onclick=async()=>{
-        let userleaderboardarray=await axios.get("http://localhost:8081/premium/show-leaderboard",{headers:{"Authentication":token}})
+        let userleaderboardarray=await axios.get("http://13.49.241.184:8081/premium/show-leaderboard",{headers:{"Authentication":token}})
         console.log(userleaderboardarray.data.leaderboardofusers);
         let leaderboard=userleaderboardarray.data.leaderboardofusers
         let leaderboards=document.getElementById("list");
+        let text=document.createTextNode("!!..LEADERBOARD..!!")
+        document.getElementById("text").appendChild(text)
         leaderboard.forEach(userdetails => {
-        leaderboards.innerHTML+=`<li>Name-${userdetails.name}--Total expense-${userdetails.totalExpenses}`
+        leaderboards.innerHTML+=`<li style="color:white">Name-->>>${userdetails.name}-->>>Total expense-${userdetails.totalExpenses}`
         });
     }
     parent.appendChild(button)
@@ -241,14 +263,15 @@ async function downloaded(){
     let token=localStorage.getItem("token");
     let download=document.createElement('input');
     download.type="button"
-    download.value="download"
+    download.value="Download"
+    download.className="my-button"
     download.style.borderRadius="20px"
     download.style.marginTop="10px"
     console.log(download)
     // download.setAttribute("id","download")
     download.onclick=async()=>{
         console.log("d is clicked")
-        const downloadedres=await axios.get("http://localhost:8081/expense/download-expenses",{headers:{"Authentication":token}})
+        const downloadedres=await axios.get("http://13.49.241.184:8081/expense/download-expenses",{headers:{"Authentication":token}})
         if(downloadedres.data.success===true){
             var a =document.createElement('a');
             a.href=downloadedres.data.Url
@@ -263,9 +286,4 @@ async function downloaded(){
     }catch(e){
             console.log(e)
     }
-
-    
-
-   
-
 }

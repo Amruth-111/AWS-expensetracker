@@ -14,7 +14,7 @@ async function submitSignup(e){
         email:email.value,
         password:password.value
     }
-    const data=await axios.post("http://localhost:8081/user/signup",my_obj)
+    const data=await axios.post("http://13.49.241.184:8081/user/signup",my_obj)
     alert( data.data.message)
     if(data.data.success===false){
         const signUpText=document.createTextNode(data.data.message)
@@ -24,6 +24,7 @@ async function submitSignup(e){
         setTimeout(()=>{
             SignUperror.removeChild(signUpText)
         },4000)
+        
     }
     if(data.data.success===true){
         const signUpText=document.createTextNode(data.data.message)
@@ -33,8 +34,8 @@ async function submitSignup(e){
     setTimeout(()=>{
         SignUperror.removeChild(signUpText)
     },4000)
+    window.location.href="./login.html";
     }
-     window.location.href="./login.html";
         
     userName.value=""
     email.value=""

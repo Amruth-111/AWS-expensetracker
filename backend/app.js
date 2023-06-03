@@ -53,9 +53,9 @@ app.use('/premium',premium)
 app.use('/password',forgotpass)
 
 
-app.use((req,res)=>{
-    res.sendFile(path.join(__dirname,`views/${req.url}`))
-})
+// app.use((req,res)=>{
+//     res.sendFile(path.join(__dirname,`views/${req.url}`))
+// })
 
 sequelize.sync().then(()=>{
     app.listen(8081)
