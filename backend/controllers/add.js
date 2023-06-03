@@ -2,6 +2,8 @@
 let bcrypt=require('bcrypt')
 let users=require('../models/users');
 let jwt=require('jsonwebtoken')
+require('dotenv').config();
+
 
 function isStringInvalid(string){
     if(string===undefined || string.length===0){
@@ -47,7 +49,7 @@ exports.signup=async(req,res)=>{
     
 }
 function generateAccessToken(id,ispremium){
-    return jwt.sign({userId:id,ispremium},"amsnshshadshkncm283u2oi901nxkjINZ9N0Z90219");
+    return jwt.sign({userId:id,ispremium},process.env.JWT_KEY);
 }
 
 exports.signin=async(req,res)=>{

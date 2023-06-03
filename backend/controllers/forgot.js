@@ -3,7 +3,7 @@ let user=require('../models/users');
 const sequelize = require('../util/database');
 const uuid=require('uuid')
 const Sib=require("sib-api-v3-sdk")
-// require("dotenv").config()
+require("dotenv").config()
 const forgotpassword=require('../models/forgot')
 const bcrypt=require('bcrypt')
 

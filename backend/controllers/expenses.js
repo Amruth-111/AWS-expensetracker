@@ -36,11 +36,6 @@ exports.addexpense=async(req,res)=>{
             })
         console.log(result)
         await t.commit();
-        // const users=await user.findByPk(totalexpid.id)
-        // console.log(users.totalExpenses)
-        // users.totalExpenses=Number(users.totalExpenses)+Number(amount)
-        // users.save();
-        // console.log(totalExpenses)
         res.json({newexpense:result})
     }catch(e){
         await t.rollback();
@@ -67,22 +62,22 @@ exports.deleteexpenses=async(req,res)=>{
             res.json({message:"id is mandatory to delete the expenses"})
         }
         const delid=req.params.id;
-        console.log(req.user.totalExpense)
+        // console.log(req.user.totalExpense)
         const expense=await expenses.findOne({
             where:{
                 id:delid
             }
         })
-        console.log(expense.amount)
-        console.log(req.user.totalExpenses)
+        // console.log(expense.amount)
+        // console.log(req.user.totalExpenses)
         let deleted=await expenses.destroy({where:{id:delid,userId:req.user.id}},{transaction:t})
         const totalExpense=Number(req.user.totalExpenses)- Number(expense.amount)
-        console.log(totalExpense)
-        let upt=await user.update({totalExpenses:totalExpense},{
+        // console.log(totalExpense)
+        await user.update({totalExpenses:totalExpense},{
             where:{id:req.user.id},
             transaction:t
         })
-        console.log(upt)
+        // console.log(upt)
         if(deleted===0){
             return res.json({success:false,message:"id does not belong to any user"})
         }
@@ -155,15 +150,16 @@ exports.pagination=async(req,res)=>{
     try{
         const{page,pagesize}=req.query;
         const limits=+pagesize
-        const data=  await expensedatabase.findAll({
+        const data=  await expenses.findAll({
             offset:(page-1)*pagesize,
             limit:limits,
             where: { userId:req.user.id }
         })
+        console.log(data)
         res.json({Data:data})
     }catch(e){
-        console.log("pagination error-->",err)
-        res.json({Error:err})
+        console.log("pagination error-->",e)
+        res.json({Error:e})
     }
 }
 

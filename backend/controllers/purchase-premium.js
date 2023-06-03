@@ -10,7 +10,7 @@ require('dotenv').config();
 // let userJWTgenerator=require('./add')
 
 function generateAccessToken(id,ispremium){
-    return jwt.sign({userId:id,ispremium},"amsnshshadshkncm283u2oi901nxkjINZ9N0Z90219");
+    return jwt.sign({userId:id,ispremium},process.env.JWT_KEY);
 }
 
 exports.buypremium=async(req,res)=>{

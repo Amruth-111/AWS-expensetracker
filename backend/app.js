@@ -2,6 +2,7 @@ const express=require('express');
 const bodyparser=require('body-parser');
 const cors=require('cors');
 const Razorpay=require('razorpay');
+const path=require('path')
 
 const sequelize=require('./util/database');
 const usertable=require('./models/users');
@@ -16,9 +17,21 @@ const forgotpassword=require('./models/forgot')
 const download=require('./models/downloaddb')
 
 
+const helmet=require('helmet')
+const compression=require('compression')
+const morgan=require('morgan');
+const fs=require('fs')
+
+require('dotenv').config();
 const app=express();
+const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'})
+
 app.use(cors());
-app.use(bodyparser.json())
+app.use(bodyparser.json());
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined',{stream:accessLogStream}));
+
 
 usertable.hasMany(exptable);
 exptable.belongsTo(usertable);  
@@ -38,6 +51,11 @@ app.use('/expense',expenses)
 app.use('/purchase',purchase)
 app.use('/premium',premium)
 app.use('/password',forgotpass)
+
+
+app.use((req,res)=>{
+    res.sendFile(path.join(__dirname,`views/${req.url}`))
+})
 
 sequelize.sync().then(()=>{
     app.listen(8081)
