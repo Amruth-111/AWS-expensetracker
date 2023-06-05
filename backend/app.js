@@ -17,20 +17,22 @@ const forgotpassword=require('./models/forgot')
 const download=require('./models/downloaddb')
 
 
-const helmet=require('helmet')
-const compression=require('compression')
-const morgan=require('morgan');
+// const helmet=require('helmet')
+// const compression=require('compression')
+// const morgan=require('morgan');
 const fs=require('fs')
 
 require('dotenv').config();
 const app=express();
-const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'})
+// const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'})
 
 app.use(cors());
+
+
 app.use(bodyparser.json());
-app.use(helmet());
-app.use(compression());
-app.use(morgan('combined',{stream:accessLogStream}));
+// app.use(helmet());
+// app.use(compression());
+// app.use(morgan('combined',{stream:accessLogStream}));
 
 
 usertable.hasMany(exptable);
@@ -53,9 +55,11 @@ app.use('/premium',premium)
 app.use('/password',forgotpass)
 
 
-// app.use((req,res)=>{
-//     res.sendFile(path.join(__dirname,`views/${req.url}`))
-// })
+app.use((req,res)=>{
+    res.sendFile(path.join(__dirname,`views/${req.url}`))
+    console.log(req.url)
+})
+
 
 sequelize.sync().then(()=>{
     app.listen(8081)
